@@ -15,7 +15,12 @@ def neclone(ui, source, dest='.', **opts):
     # generate a random directory name to house the cloned repo temporarily
     hash = sha1(str(random())).hexdigest()
     tmp_dest = os.path.join(base, hash)
-    os.mkdir(tmp_dest)
+
+    # ensure that our temporary directory exists
+    try:
+        os.makedirs(tmp_dest)
+    except OSError, err:
+        pass
 
     # clone the repo
     opts['noupdate'] = True
