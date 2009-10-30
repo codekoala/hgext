@@ -1,21 +1,20 @@
 from hashlib import sha1
 from mercurial import commands, util
 from random import random
-import hg
 import os
-import sys
 
 def neclone(ui, source, dest='.', **opts):
     """Clones a Mercurial repository into a non-empty directory"""
     
     # make sure we don't have a repository in the destination directory already
-    final_dest = os.path.join(dest, '.hg')
-    if not os.access(final_dest, os.R_OK):
-        util.Abort('There is already a Mercurial repository in %s!' % dest)
+    base = os.path.abspath(dest)
+    final_dest = os.path.join(base, '.hg')
+    if os.path.exists(final_dest):
+        raise util.Abort('There is already a Mercurial repository in `%s`!  Clone aborted.' % base)
     
     # generate a random directory name to house the cloned repo temporarily
     hash = sha1(str(random())).hexdigest()
-    tmp_dest = os.path.join(dest, hash)
+    tmp_dest = os.path.join(base, hash)
     os.mkdir(tmp_dest)
 
     # clone the repo
