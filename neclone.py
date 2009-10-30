@@ -3,6 +3,7 @@ from mercurial import commands, util
 from random import random
 import hg
 import os
+import sys
 
 def neclone(ui, source, dest='.', **opts):
     """Clones a Mercurial repository into a non-empty directory"""
@@ -18,7 +19,8 @@ def neclone(ui, source, dest='.', **opts):
     os.mkdir(tmp_dest)
 
     # clone the repo
-    commands.clone(ui, source, tmp_dest, update=False, **opts)
+    opts['noupdate'] = True
+    commands.clone(ui, source, tmp_dest, **opts)
 
     # move the cloned repo to the appropriate location
     os.rename(os.path.join(tmp_dest, '.hg'), final_dest)
@@ -28,5 +30,7 @@ def neclone(ui, source, dest='.', **opts):
 
 commands.norepo += " neclone"
 cmdtable = {
-    'ngclone': (neclone, [] , "hg neclone SOURCE [DEST]")
+    'neclone': (neclone, 
+    commands.table['^clone'][1], 
+    commands.table['^clone'][2])
 }
