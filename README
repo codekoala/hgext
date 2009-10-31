@@ -1,0 +1,7 @@
+Welcome to my personal Mercurial extension repository!  Here you will find a collection of extensions that I have built to make my life a bit easier and/or serve my own purposes.  You're free to take my extensions and use them or modify them in any way you'd like.  I disclaim all responsibility for any bad things that happen as a result of using my extensions.
+
+Extensions
+==========
+
+- neclone: Offers a single command, neclone, which allows you to clone a Mercurial repository into a directory that is not empty.  It is useful when you want to import existing files into a repository that was initialized elsewhere.
+- qadd: A collection of Mercurial Queue-related commands, such as qserve and qlog, which will interact with the patch queue repository for a regular repository without going into the .hg/patches/ tree.  The commands are basically just wrappers around the standard Mercurial commands.
