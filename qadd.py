@@ -25,10 +25,30 @@ def qserve(ui, repo, **opts):
     q = qrepo(ui, repo)
     commands.serve(ui, q, **opts)
 
-def qreorder(ui, repo, patch_name, new_index, **opts):
+def qreorder(ui, repo, new_index, patch_name=None, **opts):
     """Moves a patch in your patch queue to a different place in the series"""
+
     q = qrepo(ui, repo)
-    patch_name = '%s\n' % q.lookup(patch_name)
+    p = repo.mq
+
+    # get the current patch name
+    if p.applied:
+        current_patch = p.applied[-1].name
+
+        # remove all applied patches
+        q.pop(repo, all=True)
+    else:
+        current_patch = None
+
+    if not patch_name:
+        if not current_patch:
+            raise util.Abort('Please specify a patch to move.')
+        else:
+            patch_name = current_patch
+    else:
+        patch_name = q.lookup(patch_name)
+
+    patch_name += '\n'
 
     # make sure the new position is valid
     try:
@@ -38,20 +58,11 @@ def qreorder(ui, repo, patch_name, new_index, **opts):
     except ValueError as err:
         raise util.Abort('Invalid new position argument.  Please use a positive integer.')
 
-    # get the current patch name
-    p = repo.mq
-    if p.applied:
-        current_patch = p.applied[-1].name
-
-        # remove all applied patches
-        q.pop(repo, all=True)
-    else:
-        current_patch = None
-
     # manipulate the queue series ordering
-    ui.write('Reordering patches...\n')
-    series_path = os.path.join(q.path, 'series')
     status_path = os.path.join(q.path, 'status')
+    series_path = os.path.join(q.path, 'series')
+
+    ui.write('Moving patch "%s" to position %i in patch series...\n' % (patch_name.strip(), new_index))
     series = [l for l in open(series_path, 'r')]
     series.remove(patch_name)
     if new_index > len(series) + 1:
@@ -71,5 +82,5 @@ def qreorder(ui, repo, patch_name, new_index, **opts):
 cmdtable = {
     'qlog': (qlog, def_prop(LOG_KEY, 1), def_prop(LOG_KEY, 2)),
     'qserve': (qserve, def_prop(SERVE_KEY, 1), def_prop(SERVE_KEY, 2)),
-    'qreorder': (qreorder, [], 'hg qreorder PATCH NEW_POSITION'),
+    'qreorder': (qreorder, [], 'hg qreorder NEW_POSITION [PATCH]'),
 }
