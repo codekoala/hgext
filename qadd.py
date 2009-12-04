@@ -26,7 +26,10 @@ def qserve(ui, repo, **opts):
     commands.serve(ui, q, **opts)
 
 def qreorder(ui, repo, new_index, patch_name=None, **opts):
-    """Moves a patch in your patch queue to a different place in the series"""
+    """Moves a patch in your patch queue to a different place in the series.
+
+    If you do not specify the patch name, the currently applied patch will be 
+    moved to the new location.  The index must be 1 or greater."""
 
     q = qrepo(ui, repo)
     p = repo.mq
