@@ -4,6 +4,7 @@ import os
 
 LOG_KEY = '^log|history'
 SERVE_KEY = '^serve'
+PUSH_KEY = '^push'
 
 def_prop = lambda k, i: commands.table[k][i]
 
@@ -19,6 +20,12 @@ def qlog(ui, repo, **opts):
     """Runs the hg log command for the patch queue repo of a regular repo"""
     q = qrepo(ui, repo)
     commands.log(ui, q, **opts)
+
+def pushq(ui, repo, dest=None, **opts):
+    """Runs the hg push command for the patch queue repo of a regular repo"""
+
+    q = qrepo(ui, repo)
+    commands.push(ui, hg.repository(q.path), dest, **opts)
 
 def qserve(ui, repo, **opts):
     """Runs hg serve for the patch queue repository of a regular repo"""
@@ -84,6 +91,7 @@ def qreorder(ui, repo, new_index, patch_name=None, **opts):
 
 cmdtable = {
     'qlog': (qlog, def_prop(LOG_KEY, 1), def_prop(LOG_KEY, 2)),
+    'pushq': (pushq, def_prop(PUSH_KEY, 1), def_prop(PUSH_KEY, 2)),
     'qserve': (qserve, def_prop(SERVE_KEY, 1), def_prop(SERVE_KEY, 2)),
     'qreorder': (qreorder, [], 'hg qreorder NEW_POSITION [PATCH]'),
 }
