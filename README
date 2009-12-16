@@ -4,4 +4,13 @@ Extensions
 ==========
 
 - neclone: Offers a single command, neclone, which allows you to clone a Mercurial repository into a directory that is not empty.  It is useful when you want to import existing files into a repository that was initialized elsewhere.
-- qadd: A collection of Mercurial Queue-related commands, such as qserve and qlog, which will interact with the patch queue repository for a regular repository without going into the .hg/patches/ tree.  The commands are basically just wrappers around the standard Mercurial commands.
+
+- qadd: A collection of Mercurial Queue-related commands, such as qserve and qlog, which will interact with the patch queue repository for a regular repository without going into the .hg/patches/ tree.  The commands are basically just wrappers around the standard Mercurial commands.  Commands currently include:
+
+    - qlog: show the logs from the patch queue repository
+    - pushq: push a patch queue's changesets out to another repo
+    - qserve: run ``hg serve`` for the patch queue repository
+    - qreorder: reorder the patches in your patch queue.  Usage: hg qreorder [new index] [patch name]
+      If no patch name is specified, it will move the currently applied patch to the specified 1-based index.
+
+- mpush: Multi-push and multi-pull commands.  This allows you to easily replicate your changesets across several different repos in one command.  These commands, mpush and mpull, will push to and pull from all repositories listed in the [paths] section of the local repository's .hg/hgrc file.
