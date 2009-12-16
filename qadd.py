@@ -1,10 +1,13 @@
 from mercurial import hg, commands, util
 from hgext import mq
 import os
+import re
 
 LOG_KEY = '^log|history'
 SERVE_KEY = '^serve'
 PUSH_KEY = '^push'
+
+MAGIC_RE = re.compile('\((?P<type>\w+):(?P<pattern>.+?)\) (?P<url>.*)', re.M | re.S)
 
 def_prop = lambda k, i: commands.table[k][i]
 
@@ -89,9 +92,42 @@ def qreorder(ui, repo, new_index, patch_name=None, **opts):
         new_repo = hg.repository(ui, os.path.join(repo.root)) # refresh the series
         mq.goto(ui, new_repo, current_patch, force=False)
 
+def qticket(ui, repo, patch_name, **opts):
+    """Attempts to open a web browser to the location for the ticket that a patch addresses"""
+
+    q = qrepo(ui, repo)
+    patch = q.lookup(patch_name)
+
+    import webbrowser
+
+    ticket_urls = ui.configitems('ticket_urls')
+    for name, magic in ticket_urls:
+        match = MAGIC_RE.search(magic)
+        if match:
+            match_type, pattern, url = match.groups()
+
+            if match_type == 'file':
+                match_using = patch
+            elif match_type == 'contents':
+                patch_file = os.path.join(q.path, patch)
+                match_using = open(patch_file, 'r').readline()
+            else:
+                util.Abort('Invalid match type in policy %s: %s.  Options are "file" and "contents"\n' % (name, match_type))
+
+            magic_match = re.match(pattern, match_using)
+
+            if magic_match:
+                # replace junk in the URL with info from the patch
+                the_url = re.sub(pattern, url, match_using).strip()
+                if the_url != patch:
+                    webbrowser.open(the_url)
+        else:
+            util.Abort('Invalid ticket magic in policy %s: %s\n' % (name, magic))
+
 cmdtable = {
     'qlog': (qlog, def_prop(LOG_KEY, 1), def_prop(LOG_KEY, 2)),
     'pushq': (pushq, def_prop(PUSH_KEY, 1), def_prop(PUSH_KEY, 2)),
     'qserve': (qserve, def_prop(SERVE_KEY, 1), def_prop(SERVE_KEY, 2)),
     'qreorder': (qreorder, [], 'hg qreorder NEW_POSITION [PATCH]'),
+    'qticket': (qticket, [], 'hg qticket [PATCH]'),
 }

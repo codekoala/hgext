@@ -12,5 +12,23 @@ Extensions
     - qserve: run ``hg serve`` for the patch queue repository
     - qreorder: reorder the patches in your patch queue.  Usage: hg qreorder [new index] [patch name]
       If no patch name is specified, it will move the currently applied patch to the specified 1-based index.
+    - qticket: open a ticket/issue tracking URL for a ticket based on some pattern in either the patch name or first line of the patch.  To use this command, simply add a new section to your .hg/hgrc file as such:
+
+        [ticket_urls]
+        bitbucket = (contents:#([0-9]+).*) http://bitbucket.org/codekoala/twibber/issue/\1/
+        bitbucket2 = (file:^([0-9]+)_.*) http://bitbucket.org/codekoala/twibber/issue/\1/
+
+      The format of your policies is as such:
+
+        (match type:regex) URL with back references
+
+      The two options that are currently available for "match type" are:
+
+        - file
+        - contents
+
+      If you use "file" you will only have the patch name to apply the regex to.  With "contents" you only get the first line of the patch.  You can set the first line of your patch by using `hg qref -e` (what you type here is also what will be your commit message in your hg logs).
+
+      If any policies succeed, the command will attempt to launch your default web browser to the location determined by the policy.
 
 - mpush: Multi-push and multi-pull commands.  This allows you to easily replicate your changesets across several different repos in one command.  These commands, mpush and mpull, will push to and pull from all repositories listed in the [paths] section of the local repository's .hg/hgrc file.
