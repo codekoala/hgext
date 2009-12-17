@@ -38,3 +38,5 @@ Extensions
     - mpull: pull any outstanding changesets from each repository listed in the [paths] section of your config
     - mincoming: determine which changesets would be pulled from each repository listed in the [paths] section of your config
 
+- todo: Search through your entire repository for "TODO:".  Matches can either be printed to the screen or written to a file.
+
