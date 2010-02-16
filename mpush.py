@@ -13,7 +13,7 @@ def do_multi(func, ui, repo, **opts):
     for name, location in ui.configitems('paths'):
         try:
             func(ui, repo, location, **opts)
-        except (ValueError, AttributeError) as err:
+        except (ValueError, AttributeError), err:
             ui.warn('Failed to perform operation on repo: %s\n\t>>> %s\n' % (location, err))
 
 def multi_push(ui, repo, **opts):

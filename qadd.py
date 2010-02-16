@@ -68,7 +68,7 @@ def qreorder(ui, repo, new_index, patch_name=None, **opts):
         new_index = int(new_index)
         if new_index < 1:
             raise ValueError
-    except ValueError as err:
+    except ValueError, err:
         raise util.Abort('Invalid new position argument.  Please use a positive integer.')
 
     # manipulate the queue series ordering
